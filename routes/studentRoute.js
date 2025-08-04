@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const studentsController = require('../controllers/studentsController');
+
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Endpoint to fetch all students (secured via auth middleware)
@@ -16,5 +17,14 @@ router.get('/students/batch/:batchId', studentsController.getStudentsByBatch);
 
 // Add this route with your other routes
 router.get('/center/:centerId', authMiddleware, studentsController.getStudentsByCenter);
+
+
+
+
+router.get('/by-register/:registerNumber', studentsController.getStudentNameByRegisterNumber);
+
+
+
+
 
 module.exports = router;

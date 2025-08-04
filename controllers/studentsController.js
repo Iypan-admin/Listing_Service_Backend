@@ -176,7 +176,7 @@ const getTeacherBatches = async (req, res) => {
 const getStudentsByTeacher = async (req, res) => {
   try {
     const { teacher_id } = req.user; // Assuming this is available from auth middleware
-    
+
     // First, get all batches for this teacher
     const { data: batches, error: batchError } = await supabase
       .from('batches')
@@ -184,17 +184,17 @@ const getStudentsByTeacher = async (req, res) => {
       .eq('teacher', teacher_id);
 
     if (batchError) throw batchError;
-    
+
     if (!batches.length) {
       return res.status(200).json({
         success: true,
         data: [] // No batches, so no students
       });
     }
-    
+
     // Get batch IDs
     const batchIds = batches.map(batch => batch.batch_id);
-    
+
     // Get all students enrolled in these batches
     const { data, error } = await supabase
       .from('enrollment')
@@ -268,7 +268,7 @@ const getTeacherSchedule = async (req, res) => {
       .order('start_time', { ascending: true });
 
     if (classesError) throw classesError;
-    
+
     // Transform the data
     const transformedData = classes.map(schedule => ({
       schedule_id: schedule.schedule_id,
@@ -340,6 +340,27 @@ const getStudentsByCenter = async (req, res) => {
     });
   }
 };
+/**
+ * Fetch student by register number
+ */
+// Get student name by registration number
+const getStudentNameByRegisterNumber = async (req, res) => {
+  const { registerNumber } = req.params;
+
+  const { data, error } = await supabase
+    .from('students')
+    .select('name')
+    .eq('registration_number', registerNumber)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: 'Student not found' });
+  }
+
+  res.json({ name: data.name });
+};
+
+
 
 // Update module exports to include the new functions
 module.exports = {
@@ -349,5 +370,6 @@ module.exports = {
   getTeacherBatches,
   getStudentsByTeacher,
   getTeacherSchedule,
-  getStudentsByCenter  // Add this line
+  getStudentsByCenter,
+  getStudentNameByRegisterNumber  // Add this line
 };
