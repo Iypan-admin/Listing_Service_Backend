@@ -23,6 +23,7 @@ const getAllTeachers = async (req, res) => {
     const transformedData = data.map(teacher => ({
       ...teacher,
       teacher_name: teacher.teacher_info?.name,
+      center_id: teacher.center,
       teacher_info: undefined // Remove the nested object
     }));
 
@@ -141,23 +142,23 @@ const getTeacherBatches = async (req, res) => {
 const getStudentsByTeacher = async (req, res) => {
   try {
     const { id: user_id } = req.user; // Get user_id from auth middleware
-    
+
     // First, get the teacher record for this user
     const { data: teacherData, error: teacherError } = await supabase
       .from('teachers')
       .select('teacher_id')
       .eq('teacher', user_id)
       .single();
-    
+
     if (teacherError || !teacherData) {
       return res.status(404).json({
         success: false,
         message: 'Teacher record not found for this user.',
       });
     }
-    
+
     const teacher_id = teacherData.teacher_id;
-    
+
     // First, get all batches for this teacher
     const { data: batches, error: batchError } = await supabase
       .from('batches')
@@ -165,17 +166,17 @@ const getStudentsByTeacher = async (req, res) => {
       .eq('teacher', teacher_id);
 
     if (batchError) throw batchError;
-    
+
     if (!batches.length) {
       return res.status(200).json({
         success: true,
         data: [] // No batches, so no students
       });
     }
-    
+
     // Get batch IDs
     const batchIds = batches.map(batch => batch.batch_id);
-    
+
     // Get all students enrolled in these batches
     const { data, error } = await supabase
       .from('enrollment')
@@ -230,21 +231,21 @@ const getTeacherBatchStudents = async (req, res) => {
   try {
     const { id: user_id } = req.user; // Get user_id from auth middleware
     const { batchId } = req.params; // Get batch ID from route params
-    
+
     // First, verify this teacher exists and get teacher_id
     const { data: teacherData, error: teacherError } = await supabase
       .from('teachers')
       .select('teacher_id')
       .eq('teacher', user_id)
       .single();
-    
+
     if (teacherError || !teacherData) {
       return res.status(404).json({
         success: false,
         message: 'Teacher record not found for this user.'
       });
     }
-    
+
     // Verify this batch belongs to this teacher
     const { data: batchData, error: batchError } = await supabase
       .from('batches')
@@ -252,14 +253,14 @@ const getTeacherBatchStudents = async (req, res) => {
       .eq('teacher', teacherData.teacher_id)
       .eq('batch_id', batchId)
       .single();
-    
+
     if (batchError || !batchData) {
       return res.status(403).json({
         success: false,
         message: 'Unauthorized to access this batch or batch does not exist.'
       });
     }
-    
+
     // Get students enrolled in this batch
     const { data, error } = await supabase
       .from('enrollment')
