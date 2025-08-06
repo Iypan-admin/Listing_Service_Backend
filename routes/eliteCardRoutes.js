@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { addEliteCard, getEliteCards } = require('../controllers/eliteCardsController');
+const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/elite-cards', addEliteCard);
-router.get('/elite-cards', getEliteCards);
+// Apply authMiddleware to both routes to extract center_id from token
+router.post('/elite-cards', authMiddleware, addEliteCard);
+router.get('/elite-cards', authMiddleware, getEliteCards);
 
 module.exports = router;
