@@ -1,6 +1,6 @@
 // controllers/transactionsController.js
 
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
  * Fetch all transactions with optional pagination.

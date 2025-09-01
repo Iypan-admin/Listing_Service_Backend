@@ -2,12 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
+const path = require("path");   // 🔹 ADD THIS
+const fs = require("fs");
 const app = express();
 
-// Middleware to parse JSON requests
-app.use(bodyParser.json());
-
 app.use(cors());
+
+
+
 // Import routes
 const usersRoutes = require('./routes/usersRoutes');
 const academicCoordinatorsRoutes = require('./routes/academicCoordinatorsRoutes');
@@ -25,6 +27,20 @@ const coursesRoutes = require('./routes/coursesRoutes');
 const eliteCardRoutes = require('./routes/eliteCardRoutes');
 const cardActivationsRoutes = require("./routes/cardActivationsRoutes");
 const influencerRoutes = require("./routes/influencerRoutes");
+const paymentRoutes = require('./routes/paymentRoutes');
+const cardAdminRoutes = require("./routes/cardAdminRoutes");
+
+
+
+
+app.use(
+  '/api/payments/razorpay-webhook',
+  express.raw({ type: 'application/json' }),
+  paymentRoutes
+);
+
+// 2️⃣ For all other routes, use JSON parsing
+app.use(bodyParser.json());
 
 
 // Mount all routes under a common API prefix
@@ -44,6 +60,9 @@ app.use('/api', coursesRoutes);
 app.use('/api', eliteCardRoutes);
 app.use("/api/cards", cardActivationsRoutes);
 app.use("/api", influencerRoutes);
+app.use("/api", cardAdminRoutes);
+
+
 
 // Start the server
 const PORT = process.env.PORT || 3008;

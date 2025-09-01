@@ -1,6 +1,6 @@
 // controllers/studentsController.js
 
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
  * Fetch all students without pagination.

@@ -1,12 +1,33 @@
-const supabase = require("../config/supabaseClient");
+const { supabaseAdmin } = require("../config/supabaseClient");
 const csv = require("csv-parser");
 const fs = require("fs");
 
-// Upload CSV and insert into Supabase
-const uploadCSV = async (req, res) => {
+async function getNextReferenceId() {
+    const { data, error } = await supabaseAdmin
+        .from("giveaway")
+        .select("reference_id")
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+    if (error) throw error;
+
+    let lastNumber = 3859; // so first becomes ISMLINO3860
+    if (data && data.length > 0 && data[0].reference_id) {
+        const match = data[0].reference_id.match(/ISMLINO(\d+)/);
+        if (match) {
+            lastNumber = parseInt(match[1]);
+        }
+    }
+
+    return lastNumber + 1;
+}
+
+// ✅ Upload CSV and insert into Supabase (table: giveaway)
+exports.uploadGiveawayCSV = async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ message: "CSV file is missing" });
+            console.error("❌ CSV file is missing");
+            return res.status(400).json({ error: "CSV file is missing" });
         }
 
         const results = [];
@@ -15,101 +36,159 @@ const uploadCSV = async (req, res) => {
             .pipe(csv())
             .on("data", (row) => results.push(row))
             .on("end", async () => {
-                const insertData = results.map((row) => ({
-                    card_no: row.card_no,
-                    card_name: row.card_name,
-                    card_type: row.card_type,
-                    payment_id: row.payment_id,
-                    payment_date: row.payment_date,
-                    email: row.email,
-                    phone: row.phone,
-                    status: false, // default inactive
-                    created_at: new Date().toISOString()
-                }));
+                try {
+                    let nextId = await getNextReferenceId();
 
-                const { data, error } = await supabase
-                    .from("card_activations")
-                    .insert(insertData);
+                    // 🔑 Match CSV columns with `giveaway` table
+                    const insertData = results.map((row) => {
+                        const refId = `ISMLINO${nextId++}`;
+                        return {
+                            reference_id: refId,
+                            name_on_the_pass: row.name_on_the_pass, // required
+                            card_name: row.card_name || null,
+                            city: row.city || null,
+                            customer_email: row.customer_email || null,
+                            customer_phone: row.customer_phone || null,
+                            status: row.status || "success", // ✅ default success
+                            created_at: new Date().toISOString(),
+                        };
+                    });
 
-                // Delete uploaded CSV after processing
-                fs.unlinkSync(req.file.path);
+                    const { data, error } = await supabaseAdmin
+                        .from("giveaway")
+                        .insert(insertData);
 
-                if (error) {
-                    console.error("Supabase Insert Error:", error);
-                    return res.status(500).json({ message: "Insert failed", error });
+                    // delete csv after upload
+                    fs.unlinkSync(req.file.path);
+
+                    if (error) {
+                        console.error("❌ Supabase insert error:", error);
+                        return res.status(500).json({ error: "Database insert failed" });
+                    }
+
+                    console.log("✅ CSV uploaded and saved:", data?.length, "rows");
+                    return res.status(200).json({ status: "ok", inserted: data?.length });
+                } catch (err) {
+                    console.error("❌ CSV processing error:", err);
+                    return res.status(500).json({ error: "CSV processing failed" });
                 }
-
-                res.status(200).json({ message: "Data uploaded successfully", data });
             });
     } catch (err) {
-        console.error("CSV Upload Error:", err);
-        res.status(500).json({ message: "Server error" });
+        console.error("❌ Upload error:", err);
+        return res.status(500).json({ error: "Server error" });
     }
 };
 
-// Fetch all cards
-const getAllCards = async (req, res) => {
+// ✅ Insert single manual giveaway entry
+exports.addGiveawayManual = async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from("card_activations")
+        const {
+            name_on_the_pass,
+            card_name,
+            city,
+            customer_email,
+            customer_phone,
+            status
+        } = req.body;
+
+        // Basic validation
+        if (!name_on_the_pass) {
+            return res.status(400).json({ error: "name_on_the_pass is required" });
+        }
+
+        // 🔑 Auto-generate reference_id
+        const nextId = await getNextReferenceId();
+        const refId = `ISMLINO${nextId}`;
+
+        const { data, error } = await supabaseAdmin
+            .from("giveaway")
+            .insert([{
+                reference_id: refId,
+                name_on_the_pass,
+                card_name: card_name || null,
+                city: city || null,
+                customer_email: customer_email || null,
+                customer_phone: customer_phone || null,
+                status: status || "success",
+                created_at: new Date().toISOString(),
+            }]);
+
+        if (error) {
+            console.error("❌ Insert error:", error);
+            return res.status(500).json({ error: "Insert failed" });
+        }
+
+        return res.status(201).json({ message: "Giveaway entry added", data });
+    } catch (err) {
+        console.error("❌ Server error:", err);
+        return res.status(500).json({ error: "Server error" });
+    }
+};
+// ✅ Fetch all giveaways
+exports.getAllGiveaways = async (req, res) => {
+    try {
+        const { data, error } = await supabaseAdmin
+            .from("giveaway")
             .select("*")
             .order("created_at", { ascending: false });
 
         if (error) {
-            return res.status(500).json({ message: "Fetch failed", error });
+            console.error("❌ Fetch error:", error);
+            return res.status(500).json({ error: "Fetch failed" });
         }
 
-        res.status(200).json(data);
+        return res.status(200).json(data);
     } catch (err) {
-        console.error("Fetch Error:", err);
-        res.status(500).json({ message: "Server error" });
+        console.error("❌ Server error:", err);
+        return res.status(500).json({ error: "Server error" });
     }
 };
 
-// ✅ New: Get Card Statistics (total, active, inactive)
-const getCardStats = async (req, res) => {
+// ✅ Get Card Stats (Pending, Active, Total)
+exports.getCardStats = async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from("card_activations")
-            .select("status");
+        // 1. Get all generated cards
+        const { data: cards, error } = await supabaseAdmin
+            .from("elite_card_generate")
+            .select("id, status");
 
         if (error) {
-            return res.status(500).json({ message: "Fetch failed", error });
+            console.error("❌ Card Fetch error:", error);
+            return res.status(500).json({ error: "Card fetch failed" });
         }
 
-        const total = data.length;
-        const active = data.filter((item) => item.status === true).length;
-        const inactive = total - active;
+        // 2. Calculate counts
+        const pending = cards.filter((c) => c.status === "card_generated").length;
+        const active = cards.filter((c) => c.status === "approved").length;
+        const total = pending + active;
 
-        res.status(200).json({ total, active, inactive });
+        return res.status(200).json({ total, pending, active });
     } catch (err) {
-        console.error("Stats Error:", err);
-        res.status(500).json({ message: "Server error" });
+        console.error("❌ Stats error:", err);
+        return res.status(500).json({ error: "Server error" });
     }
 };
-const getRecentInactiveCards = async (req, res) => {
+
+// ✅ Get recent 2 Pending Cards from elite_card_generate
+exports.getRecentPendingCards = async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from("card_activations")
-            .select("*")
-            .eq("status", false)
+        // Fetch recent 2 pending cards
+        const { data: cards, error } = await supabaseAdmin
+            .from("elite_card_generate")
+            .select("id, name_on_the_pass, email, card_number,card_name, status, created_at")
+            .eq("status", "card_generated")   // only pending
             .order("created_at", { ascending: false })
             .limit(2);
 
         if (error) {
-            return res.status(500).json({ message: "Fetch failed", error });
+            console.error("❌ Fetch error:", error);
+            return res.status(500).json({ error: "Card fetch failed" });
         }
 
-        res.status(200).json(data);
+        return res.status(200).json(cards);
     } catch (err) {
-        console.error("Fetch Error:", err);
-        res.status(500).json({ message: "Server error" });
+        console.error("❌ Server error:", err);
+        return res.status(500).json({ error: "Server error" });
     }
 };
 
-module.exports = {
-    uploadCSV,
-    getAllCards,
-    getCardStats,
-    getRecentInactiveCards,
-};

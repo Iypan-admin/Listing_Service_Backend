@@ -1,5 +1,4 @@
-const supabase = require('../config/supabaseClient');
-
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 // Add a new elite card entry
 const addEliteCard = async (req, res) => {
     try {

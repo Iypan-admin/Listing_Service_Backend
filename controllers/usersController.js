@@ -1,6 +1,5 @@
 // controllers/usersController.js
-
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
  * Fetch all users with optional filters (role, status).
@@ -10,7 +9,7 @@ const getAllUsers = async (req, res) => {
   try {
     const { role, status } = req.query;
 
-    let query = supabase.from('users').select('id, name, role, created_at, status');
+    let query = supabase.from('users').select('id, name, full_name, role, created_at, status');
 
     // Apply filters if provided
     if (role) {
@@ -50,7 +49,7 @@ const getUserById = async (req, res) => {
 
     const { data, error } = await supabase
       .from('users')
-      .select('id, name, role, created_at, status')
+      .select('id, name, full_name, role, created_at, status')
       .eq('id', id)
       .single();
 

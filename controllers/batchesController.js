@@ -1,6 +1,6 @@
 // controllers/batchesController.js
 
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
  * Fetch all batches with optional pagination.

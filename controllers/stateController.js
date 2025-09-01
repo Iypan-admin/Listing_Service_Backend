@@ -1,6 +1,6 @@
 // controllers/statesController.js
 
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
  * Fetch all states with optional pagination.

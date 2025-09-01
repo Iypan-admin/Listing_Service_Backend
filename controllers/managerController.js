@@ -1,6 +1,5 @@
 // controllers/managerController.js
-
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
  * Fetch all managers with optional pagination.

@@ -3,22 +3,26 @@ const router = express.Router();
 const upload = require("../middleware/upload");
 
 const {
-    uploadCSV,
-    getAllCards,
+    uploadGiveawayCSV,
+    addGiveawayManual,
+    getAllGiveaways,
     getCardStats,
-    getRecentInactiveCards
+    getRecentPendingCards
 } = require("../controllers/cardActivationsController");
 
-// POST /api/cards/upload
-router.post("/upload", upload.single("file"), uploadCSV);
+// ✅ Upload CSV → /api/giveaway/upload
+router.post("/upload", upload.single("file"), uploadGiveawayCSV);
 
-// GET /api/cards/  (all cards)
-router.get("/", getAllCards);
+// ✅ Manual single insert → /api/giveaway/manual
+router.post("/manual", addGiveawayManual);
 
-// ✅ New route for stats
-// GET /api/cards/stats
+// ✅ Get all giveaways → /api/giveaway
+router.get("/", getAllGiveaways);
+
+// ✅ Card statistics → /api/giveaway/stats
 router.get("/stats", getCardStats);
 
-router.get("/recent-inactive", getRecentInactiveCards);
+// ✅ Recent pending cards → /api/giveaway/recent-pending
+router.get("/recent-pending", getRecentPendingCards);
 
 module.exports = router;

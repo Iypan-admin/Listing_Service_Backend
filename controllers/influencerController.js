@@ -1,4 +1,4 @@
-const supabase = require('../config/supabaseClient');
+const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const { text } = require('stream/consumers');
