@@ -3,23 +3,23 @@ const axios = require("axios");
 
 // ✅ Setup Transporter
 const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
+  service: "Gmail",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
 });
 
 // ✅ Email Templates
 const mailTemplates = {
-    EduPass: (name, cardNumber) => ({
-        subject: "Welcome to ISML! Your EduPass is Ready – Next Steps Inside.",
-        html: `
+  EduPass: (name, cardNumber) => ({
+    subject: "Welcome to ISML! Your EduPass is Ready – Next Steps Inside.",
+    html: `
       <div style="font-family: Arial, sans-serif; color:#333; line-height:1.6;">
         <h2>Hi ${name},</h2>
         <p>Greetings from the <b>Indian School for Modern Languages</b> Family! We’re overjoyed to welcome you to our community of passionate learners.</p>
 
-        <h3>🎉 You’ve Successfully Purchased: <b>ISML Elite EduPass</b></h3>
+        <h3>🎉 You’re now an Elite Member with <b>ISML EduPass</b></h3>
         <ul>
           <li>✅ Validity: 1 Year</li>
           <li>✅ Language Access: Any 1 Language</li>
@@ -59,16 +59,16 @@ const mailTemplates = {
         <p>Warm regards,<br><b>Team Elite Membership</b><br>Indian School for Modern Languages</p>
       </div>
     `,
-    }),
+  }),
 
-    ScholarPass: (name, cardNumber) => ({
-        subject: "Welcome to ISML! Your ScholarPass is Now Active – Start Your Language Journey.",
-        html: `
+  ScholarPass: (name, cardNumber) => ({
+    subject: "Welcome to ISML! Your ScholarPass is Now Active – Start Your Language Journey.",
+    html: `
       <div style="font-family: Arial, sans-serif; color:#333; line-height:1.6;">
         <h2>Hi ${name},</h2>
         <p>Greetings from the <b>Indian School for Modern Languages</b> Family! We’re overjoyed to welcome you to our community of passionate learners.</p>
 
-        <h3>🎉 You’ve Successfully Purchased: <b>ISML Elite ScholarPass</b></h3>
+        <h3>🎉 You’re now an Elite Member with <b>ISML ScholarPass</b></h3>
         <ul>
           <li>✅ Validity: 2 Years</li>
           <li>✅ Language Access: Up to 3 Languages (French, German, Japanese)</li>
@@ -110,16 +110,16 @@ const mailTemplates = {
         <p>Warm regards,<br><b>Team Elite Membership</b><br>Indian School for Modern Languages</p>
       </div>
     `,
-    }),
+  }),
 
-    InfinitePass: (name, cardNumber) => ({
-        subject: "Welcome to ISML! Your InfinityPass is Now Active – Start Your Language Journey.",
-        html: `
+  InfinitePass: (name, cardNumber) => ({
+    subject: "Welcome to ISML! Your InfinityPass is Now Active – Start Your Language Journey.",
+    html: `
       <div style="font-family: Arial, sans-serif; color:#333; line-height:1.6;">
         <h2>Hi ${name},</h2>
         <p>Greetings from the <b>Indian School for Modern Languages</b> Family! We’re thrilled to welcome you to our community of passionate learners.</p>
 
-        <h3>🎉 You’ve Successfully Purchased: <b>ISML Elite InfinityPass</b></h3>
+        <h3>🎉 You’re now an Elite Member with <b>ISML InfinityPass</b></h3>
         <ul>
           <li>✅ Validity: 3 Years</li>
           <li>✅ Language Access: All Current & Upcoming Languages</li>
@@ -161,40 +161,40 @@ const mailTemplates = {
         <p>Warm regards,<br><b>Team Elite Membership</b><br>Indian School for Modern Languages</p>
       </div>
     `,
-    }),
+  }),
 };
 
 // ✅ Download PDF from Supabase URL
 async function downloadFile(url) {
-    const response = await axios.get(url, { responseType: "arraybuffer" });
-    return response.data;
+  const response = await axios.get(url, { responseType: "arraybuffer" });
+  return response.data;
 }
 
 // ✅ Send Mail Function
 exports.sendCardMail = async (to, cardName, nameOnPass, cardNumber, pdfUrl) => {
-    try {
-        const templateFn = mailTemplates[cardName];
-        if (!templateFn) throw new Error("Unknown card type: " + cardName);
+  try {
+    const templateFn = mailTemplates[cardName];
+    if (!templateFn) throw new Error("Unknown card type: " + cardName);
 
-        const { subject, html } = templateFn(nameOnPass, cardNumber);
+    const { subject, html } = templateFn(nameOnPass, cardNumber);
 
-        const pdfBuffer = await downloadFile(pdfUrl);
+    const pdfBuffer = await downloadFile(pdfUrl);
 
-        await transporter.sendMail({
-            from: `"ISML Elite Membership" <${process.env.SMTP_USER}>`,
-            to,
-            subject,
-            html,
-            attachments: [
-                {
-                    filename: `${cardName}_${cardNumber}.pdf`,
-                    content: pdfBuffer,
-                },
-            ],
-        });
+    await transporter.sendMail({
+      from: `"ISML Elite Membership" <${process.env.SMTP_USER}>`,
+      to,
+      subject,
+      html,
+      attachments: [
+        {
+          filename: `${cardName}_${cardNumber}.pdf`,
+          content: pdfBuffer,
+        },
+      ],
+    });
 
-        console.log("✅ Mail sent to:", to);
-    } catch (err) {
-        console.error("❌ Mail error:", err.message);
-    }
+    console.log("✅ Mail sent to:", to);
+  } catch (err) {
+    console.error("❌ Mail error:", err.message);
+  }
 };

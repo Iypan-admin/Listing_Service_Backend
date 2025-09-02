@@ -324,7 +324,8 @@ const getTeachersByCenter = async (req, res) => {
         teacher,
         teacher_info:users!inner(
           id, 
-          name
+          name,
+          full_name
         )
       `)
       .eq('center', centerId);
@@ -335,6 +336,7 @@ const getTeachersByCenter = async (req, res) => {
     const transformedData = data.map(teacher => ({
       ...teacher,
       teacher_name: teacher.teacher_info?.name,
+      teacher_full_name: teacher.teacher_info?.full_name,
       email: teacher.teacher_info?.email,
       teacher_info: undefined // Remove the nested object
     }));

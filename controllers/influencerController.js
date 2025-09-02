@@ -5,10 +5,10 @@ const { text } = require('stream/consumers');
 
 const registerInfluencer = async (req, res) => {
     try {
-        const { name, email, phone } = req.body;
-        console.log("Received data:", { name, email, phone });
+        const { name, email, phone, role } = req.body;
+        console.log("Received data:", { name, email, phone, role, });
 
-        if (!name || !email || !phone) {
+        if (!name || !email || !phone || !role) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -48,6 +48,7 @@ const registerInfluencer = async (req, res) => {
                 email,
                 phone,
                 influencer_id,
+                role,
             },
         ]);
 
@@ -65,83 +66,89 @@ const registerInfluencer = async (req, res) => {
             },
         });
 
-        const pdfPath1 = path.join(__dirname, "../pdf/ELITE CARD DETAILS.pdf");
-        const pdfPath2 = path.join(__dirname, "../pdf/ISML ELITE CARD  GUIDELINES.pdf");
+        const pdfPath1 = path.join(__dirname, "../pdf/ISML_Language_Quest.pdf");
+        const pdfPath2 = path.join(__dirname, "../pdf/Media_Kit.pdf");
+        const imgPath1 = path.join(__dirname, "../assets/Poster1.png");
+        const imgPath2 = path.join(__dirname, "../assets/Poster2.png");
+        const videoPath = path.join(__dirname, "../assets/Reel1.mp4");
 
         const mailOptions = {
             from: `"ELITE CARD - Indian School for Modern Languages" <${process.env.MAIL_USER}>`,
             to: email,
-            subject: "Welcome to the ISML Elite Membership Campaign! 🎓✨ Let’s Empower India to Learn!",
+            subject: "Thank You for Partnering with ISML Elite Membership.",
             html: `
   <div style="font-family: Arial, sans-serif; font-size: 15px; color: #222; line-height: 1.6;">
-    <p>Hi ${name},</p>
+    <p style="font-size:16px;">Hi <b style="color:#1a73e8;">${name}</b>,</p>
 
-    <p>We’re excited to collaborate with you on our <b>Elite Membership Campaign</b> for <b>ISML – the Indian School for Modern Languages</b> – a bold initiative making premium <b>French, German, and Japanese</b> language education accessible to everyone in India, starting at just <b>₹49</b>.</p>
+    <p>We’re truly grateful to have you collaborate with us on this exciting journey. 
+    As a token of appreciation, we’re delighted to gift you our 
+    <b style="color:#e63946;">Elite InfinityPass Membership</b> 
+    (worth <b>₹59,700+</b> in benefits) – absolutely free, with exclusive premium privileges.</p>
 
-    <h3 style="margin-top: 24px;">Who are we?</h3>
-    <p>ISML is not just an Ed-Tech platform — it’s a mission-driven movement to <b>simplify foreign language learning</b> through <b>affordable</b>, lifetime-access learning programs. We focus on practical usage, not grammar drills, helping learners connect with <b>global opportunities</b>.</p>
-
-    <h3 style="margin-top: 24px;">What is this Campaign About?</h3>
-    <p>You’ve been selected to join our <b>ISML Elite Creator Circle</b>. Your role is to spread awareness about the ISML Elite Cards, priced at <b>₹49, ₹99, and ₹199</b>. Each card unlocks lifetime access to all <b>3 language learning programs</b> — <b>and more to come</b>.</p>
-
-    <h3 style="margin-top: 24px;">Your Role: What You Need to Do</h3>
-    <ul>
-      <li>Use our <b>Custom Creator Kit</b> (we’ll send you ready-to-use reels, post captions, and story templates and ideas).</li>
-      <li>Share the campaign across your <b>Instagram, Facebook, YouTube, and WhatsApp</b>.</li>
-      <li><b>Posting Plan</b> (within 7 days): 2 Reels, 1 Feed Post, 3 to 5 Story Sets</li>
-    </ul>
-
-    <h3 style="margin-top: 24px;">Sales Expectation:</h3>
-    <p>We expect a minimum of <b>10 Elite Card sales</b> (Not Compulsory) from your audience in the next 7 days. Creators showing exceptional creativity or conversions will be featured on our official pages and considered for <b>long-term paid collaborations</b> and city-level franchise roles.</p>
-
-    <h3 style="margin-top: 24px;">Your Benefits:</h3>
-    <ul>
-      <li><b>Free ISML <u>InfinityPass</u> worth ₹199</b> (can be used for <b>yourself</b> or <b>gifted</b>).</li>
-      <li><b>Featured spotlight</b> on our official ISML social media pages.</li>
-      <li><b>Eligibility</b> to become an ISML Brand Ambassador with higher commissions and campaign priority.</li>
-    </ul>
-
-    <h3 style="margin-top: 24px;">Additional Value for you:</h3>
-    <p>Every Elite Member of <b><u>InfinityPass</u></b> gets:</p>
-    <ul>
-      <li>Access to <b>6 languages in 3 years</b></li>
-      <li><b>Savings of over ₹59,700</b> on regular fees</li>
-      <li><b>3-months internship certificate</b></li>
-      <li>Library, LMS and toolkit access</li>
-      <li>50% off on live events, workshops and more</li>
-    </ul>
-
-    <p>Once we receive your confirmation, we will send your <b>Creator Toolkit and your Virtual Elite Card</b> in E-mail within 30 minutes.</p>
-
-    <p>To confirm, simply reply <b>“YES”</b> after reading the Terms and Conditions and Welcome Kit.</p>
-
-    <h3 style="margin-top: 24px;">How to Get Started:</h3>
-    <p>Reply with the following details to <b>confirm participation</b> and activate your <b>Elite Creator profile</b>:</p>
-    <ol>
-      <li><b>Full Name</b></li>
-      <li><b>Email ID</b></li>
-      <li><b>Contact Number</b> (<u>WhatsApp</u> enabled)</li>
-      <li><b>Name to display on Elite Card</b> (Learner Name)</li>
+    <h3 style="margin-top: 24px; color:#1a73e8;">✨ What We Request from You</h3>
+    <ol style="padding-left:20px;">
+      <li style="margin-bottom:10px;">
+        Share our campaign – Post about <b style="color:#e63946;">ISML Language Quest ’25</b> and your giveaway campaign across:
+        <ul style="list-style: none; padding-left: 0; margin-top:8px;">
+          <li>✔ Instagram (Reel, Post, Story)</li>
+          <li>✔ Facebook (Reel, Post, Story)</li>
+          <li>✔ YouTube (Shorts/Video)</li>
+          <li>✔ WhatsApp (Forward to groups or Status update)</li>
+        </ul>
+      </li>
+      <li style="margin-bottom:10px;">
+        Upload our provided video content on your platforms and tag: 
+        <b style="color:#1a73e8;">@learnwithisml</b> + <b style="color:#1a73e8;">@ismlconnect</b>. 
+        Also share the Quiz link: 
+        <a href="https://forms.gle/ZrUCYeQHB7vz96LZ7" target="_blank">https://forms.gle/ZrUCYeQHB7vz96LZ7</a>
+      </li>
+      <li>⭐ Optional Content: If you’d like to create your own additional posts or videos, please seek prior approval from our team before publishing.</li>
     </ol>
 
-    <p>Let’s work together to inspire more learners across India.<br>
-    <a href="https://www.indianschoolformodernlanguages.com" target="_blank" style="color: #1a73e8;">Looking forward to a high-impact campaign with you.</a></p>
+    <h3 style="margin-top: 24px; color:#1a73e8;">🎯 Our Expectation</h3>
+    <p>We’d love your support in encouraging at least 
+    <b style="color:#e63946;">10 participants</b> from your network. Kindly spread this opportunity among your 
+    <b>family, friends, peers, and collaborators</b> so more students can benefit.</p>
+
+    <h3 style="margin-top: 24px; color:#1a73e8;">🌍 Why This Partnership Matters</h3>
+    <ul style="list-style:none; padding-left:0;">
+      <li>✔ Together, we’ll inspire thousands of students to celebrate language learning.</li>
+      <li>✔ Your influence will make ISML’s <b style="color:#e63946;">10th Anniversary</b> truly special.</li>
+      <li>✔ Your Elite InfinityPass gives you privileged access to ISML’s programs, events, and exclusive opportunities.</li>
+    </ul>
+
+    <h3 style="margin-top: 24px; color:#1a73e8;">💳 Your Exclusive InfinityPass Details</h3>
+    <ul style="list-style:none; padding-left:0;">
+      <li>🎫 <b>Validity:</b> 3 Years</li>
+      <li>🌐 <b>Languages:</b> All Current & Upcoming (Online + Offline)</li>
+      <li>💰 <b>Discounts:</b> Up to 15% off across ISML programs & certifications</li>
+    </ul>
+
+    <h3 style="margin-top: 24px; color:#1a73e8;">⭐ Additional Elite Benefits:</h3>
+    <ul style="list-style:none; padding-left:0;">
+      <li>✔ Benefits worth <b>₹59,700+</b></li>
+      <li>✔ Study Abroad Guidance</li>
+      <li>✔ 3-Month Certified Internship</li>
+      <li>✔ Placement Assistance & Priority Support</li>
+    </ul>
+
+    <p style="margin-top: 16px;">Once again, thank you for being part of the 
+    <b style="color:#e63946;">ISML family</b> – let’s make this journey inspiring and impactful!</p>
 
     <p style="margin-top: 32px;">
       Warm regards,<br>
-      <b>Team ISML – Elite Membership</b><br>
-      <a href="https://www.indianschoolformodernlanguages.com" target="_blank">www.indianschoolformodernlanguages.com</a><br>
-      For any support feel free to Contact us at <b>9385457322</b> (10:00 AM – 06:00 PM)
-    </p>
-
-    <p style="font-size: 12px; color: #888;">
-      All content, data, and brand assets of <b>Iypan</b> Educational Centre Pvt Ltd are protected by copyright and trademark laws — unauthorized use is strictly prohibited.
+      <b style="color:#1a73e8;">Team ISML – Elite Membership</b><br>
+      <a href="https://www.indianschoolformodernlanguages.com/elite-card" target="_blank">www.indianschoolformodernlanguages.com/elite-card</a>
     </p>
   </div>
-  `,
+`,
+
             attachments: [
-                { filename: "Influencer_Welcome Letter.pdf", path: pdfPath1 },
-                { filename: "Influencer_Terms & Conditions.pdf", path: pdfPath2 },
+                { filename: "ISML Language Quest’25.pdf", path: pdfPath1 },
+                { filename: "Media Kit -Captions.pdf", path: pdfPath2 },
+                { filename: "Poster1.png", path: imgPath1 },
+                { filename: "Poster2.png", path: imgPath2 },
+                { filename: "Reel1.mp4", path: videoPath },
             ],
         };
 
