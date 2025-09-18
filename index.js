@@ -29,8 +29,7 @@ const cardActivationsRoutes = require("./routes/cardActivationsRoutes");
 const influencerRoutes = require("./routes/influencerRoutes");
 const paymentRoutes = require('./routes/paymentRoutes');
 const cardAdminRoutes = require("./routes/cardAdminRoutes");
-
-
+const leadsRoutes = require("./routes/leadsRoutes");
 
 
 app.use(
@@ -61,8 +60,7 @@ app.use('/api', eliteCardRoutes);
 app.use("/api/cards", cardActivationsRoutes);
 app.use("/api", influencerRoutes);
 app.use("/api", cardAdminRoutes);
-
-
+app.use("/api/leads", leadsRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3008;

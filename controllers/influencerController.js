@@ -194,8 +194,6 @@ const getAllInfluencers = async (req, res) => {
     }
 };
 
-
-
 module.exports = {
     registerInfluencer,
     getInfluencerCount,
