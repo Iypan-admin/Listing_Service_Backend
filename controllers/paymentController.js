@@ -60,11 +60,11 @@ exports.razorpayWebhook = async (req, res) => {
 
         // ✅ Decide card_name based on amount
         let card_name = null;
-        if (rupeeAmount === 199) {
+        if (rupeeAmount === 49) {
             card_name = "EduPass";
-        } else if (rupeeAmount === 499) {
+        } else if (rupeeAmount === 299) {
             card_name = "ScholarPass";
-        } else if (rupeeAmount === 999) {
+        } else if (rupeeAmount === 499) {
             card_name = "InfinitePass";
         } else {
             // ❌ Ignore other pages

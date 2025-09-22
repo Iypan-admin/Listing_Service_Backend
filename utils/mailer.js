@@ -63,54 +63,61 @@ const mailTemplates = {
   }),
 
   ScholarPass: (name, cardNumber) => ({
-    subject: "Welcome to ISML! Your ScholarPass is Now Active – Start Your Language Journey.",
+    subject: "ISML ScholarPass Delivered – Start Learning Today",
     html: `
-      <div style="font-family: Arial, sans-serif; color:#333; line-height:1.6;">
-        <h2>Hi ${name},</h2>
-        <p>Greetings from the <b>Indian School for Modern Languages</b> Family! We’re overjoyed to welcome you to our community of passionate learners.</p>
+    <div style="font-family: Arial, sans-serif; color:#333; line-height:1.6;">
+      <h2>Hi ${name},</h2>
+      <p>Great news — your <b>FREE ISML ScholarPass</b> (worth ₹31,740) has just been issued.</p>
+      <p>Your ScholarPass ID: <b>${cardNumber}</b> is attached below.</p>
 
-        <h3>🎉 You’re now an Elite Member with <b>ISML ScholarPass</b></h3>
-        <ul>
-          <li>✅ Validity: 2 Years</li>
-          <li>✅ Language Access: Up to 3 Languages (French, German, Japanese)</li>
-          <li>✅ Mode: Online + Offline</li>
-          <li>✅ Your ScholarPass ID: <b>${cardNumber}</b></li>
-        </ul>
+      <h3>🎓 What You Can Do With Your Pass</h3>
+      <ul>
+        <li>Access <b>French, German & Japanese</b> learning materials</li>
+        <li>Practice with past exam papers</li>
+        <li>Apply for certified internships & career support</li>
+        <li>Get study-abroad preparation guidance</li>
+        <li>Unlock exclusive ISML learning discounts</li>
+      </ul>
 
-        <h3>✨ Your ScholarPass Benefits:</h3>
-        <ul>
-          <li>✅ Online Course Access</li>
-          <li>✅ Offline Centre Access</li>
-          <li>✅ 10% Discount – ML Courses & ID Fastrack</li>
-          <li>✅ 12% Discount – ID Programs & Immersion</li>
-          <li>✅ Study Abroad Guidance</li>
-          <li>✅ 1-Month Certified Internship</li>
-        </ul>
+      <p><b>Bonus:</b> Want to help a friend? Forward them this link to claim their own ScholarPass:<br>
+      <a href="https://forms.gle/f6o74twN3EBZsAm2A">https://forms.gle/f6o74twN3EBZsAm2A</a></p>
 
-        <h3>📌 How to Start Using Your ScholarPass:</h3>
-        <ol>
-          <li>Choose up to 3 languages across 2 years (Online or Offline).</li>
-          <li>Select your program: <a href="https://www.indianschoolformodernlanguages.com/courses">ML / ID / IMM</a></li>
-          <li>Pick your day & time slot</li>
-          <li>For online support call: <b>73388 81781</b></li>
-          <li>For offline centres: <a href="https://www.indianschoolformodernlanguages.com/centres">Check availability</a></li>
-        </ol>
+      <h3>📌 How to Start Using Your ScholarPass</h3>
+      <ol>
+        <li>Choose your languages across 2 years (Mode: Online or Offline).</li>
+        <li>Select your preferred program: 
+          <a href="https://www.indianschoolformodernlanguages.com/courses">View Courses</a>
+          <ul>
+            <li>Master a Language (ML)</li>
+            <li>International Diploma (ID)</li>
+            <li>Immersion (IMM)</li>
+          </ul>
+        </li>
+        <li>Pick your day and time slot.</li>
+        <li>For online class joining & support, contact our Admission Manager: <b>+91 73388 81781</b></li>
+        <li>For offline center availability & joining, visit: 
+          <a href="https://www.indianschoolformodernlanguages.com/centres">ISML Centres</a>
+        </li>
+      </ol>
 
-        <h3>⚖️ Terms & Conditions:</h3>
-        <ul>
-          <li>ScholarPass is non-transferable, valid for 3 languages over 2 years.</li>
-          <li>Discounts apply only to ISML-approved courses.</li>
-          <li>Offline availability varies by city.</li>
-          <li>Internship/placement depend on performance & slots.</li>
-          <li>Discounts only on base fee (GST excluded).</li>
-        </ul>
+      <h3>⚖️ Terms & Conditions</h3>
+      <ul>
+        <li>ScholarPass is valid for a period of 2 years from the activation date.</li>
+        <li>Access is subject to course availability in your preferred format/location.</li>
+        <li>Discounts apply only to the base course fee. GST and other statutory charges are not included.</li>
+        <li>Discounts must be claimed before the batch begins and cannot be applied to ongoing batches.</li>
+        <li>Only courses officially listed on ISML platforms are eligible for benefits.</li>
+      </ul>
 
-        <p>Thank you for choosing ISML. Your language journey begins today!</p>
-        <p>For help: <a href="mailto:elitemembership.isml@gmail.com">elitemembership.isml@gmail.com</a> | Call: 93854 57322</p>
-        <br>
-        <p>Warm regards,<br><b>Team Elite Membership</b><br>Indian School for Modern Languages</p>
-      </div>
-    `,
+      <p>We are delighted to have you onboard. Your journey to international opportunities starts today.</p>
+      
+      <br>
+      <p>With warm regards,<br>
+      <b>Team ISML</b><br>
+      Indian School for Modern Languages<br>
+      <a href="https://www.indianschoolformodernlanguages.com">www.indianschoolformodernlanguages.com</a></p>
+    </div>
+  `,
   }),
 
   InfinitePass: (name, cardNumber) => ({
