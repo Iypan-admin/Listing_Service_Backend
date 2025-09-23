@@ -3,7 +3,7 @@
 const { supabase, supabaseAdmin } = require("../config/supabaseClient");
 
 /**
- * Fetch all students without pagination.
+ * Fetch all students without pagination, including first batch name.
  */
 const getAllStudents = async (req, res) => {
   try {
@@ -19,16 +19,21 @@ const getAllStudents = async (req, res) => {
         email, 
         phone, 
         status,
-        center_details:centers(center_id, center_name)
+        center_details:centers(center_id, center_name),
+        enrollments:enrollment (
+          batch:batches(batch_id, batch_name)
+        )
       `);
 
     if (error) throw error;
 
-    // Transform the response to include center name and remove nested object
+    // Transform the response to include center name and first batch
     const transformedData = data.map(student => ({
       ...student,
       center_name: student.center_details?.center_name,
-      center_details: undefined // Remove the nested object
+      batch_name: student.enrollments?.[0]?.batch?.batch_name || "N/A",
+      center_details: undefined, // Remove the nested object
+      enrollments: undefined // Remove nested enrollments
     }));
 
     res.status(200).json({
@@ -371,5 +376,5 @@ module.exports = {
   getStudentsByTeacher,
   getTeacherSchedule,
   getStudentsByCenter,
-  getStudentNameByRegisterNumber  // Add this line
+  getStudentNameByRegisterNumber,
 };
